@@ -1,8 +1,9 @@
 import React from "react";
 
-const InputField = ({ label, type = "text", name, value, onChange, placeholder, helperText, error }) => (
+const InputField = ({ label, icon: Icon, type = "text", name, value, onChange, placeholder, helperText, error }) => (
     <div className="mb-5 group">
-        <label className="block text-slate-700 font-semibold mb-2 ml-1" htmlFor={name}>
+        <label className="flex items-center gap-2 text-slate-700 font-semibold mb-2 ml-1" htmlFor={name}>
+            {Icon && <Icon className="w-5 h-5 text-brand-500" />}
             {label}
         </label>
         <div className="relative">

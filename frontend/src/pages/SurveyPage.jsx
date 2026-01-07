@@ -3,6 +3,19 @@ import { useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import RadioGroup from "../components/RadioGroup";
 import Button from "../components/Button";
+import {
+    CalendarDays,
+    User,
+    Droplets,
+    Syringe,
+    Gauge,
+    Cigarette,
+    HeartPulse,
+    FlaskConical,
+    TestTube,
+    Microscope,
+    Clock,
+} from "lucide-react";
 
 const SurveyPage = () => {
     const navigate = useNavigate();
@@ -117,6 +130,7 @@ const SurveyPage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField
                                     label="Age"
+                                    icon={CalendarDays}
                                     type="number"
                                     name="age"
                                     value={formData.age}
@@ -127,6 +141,7 @@ const SurveyPage = () => {
                                 />
                                 <RadioGroup
                                     label="Sex"
+                                    icon={User}
                                     name="sex"
                                     selected={formData.sex}
                                     onChange={handleChange}
@@ -140,24 +155,28 @@ const SurveyPage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
                                 <RadioGroup
                                     label="Anaemia"
+                                    icon={Droplets}
                                     name="anaemia"
                                     selected={formData.anaemia}
                                     onChange={handleChange}
                                 />
                                 <RadioGroup
                                     label="Diabetes"
+                                    icon={Syringe}
                                     name="diabetes"
                                     selected={formData.diabetes}
                                     onChange={handleChange}
                                 />
                                 <RadioGroup
                                     label="High Blood Pressure"
+                                    icon={Gauge}
                                     name="highBloodPressure"
                                     selected={formData.highBloodPressure}
                                     onChange={handleChange}
                                 />
                                 <RadioGroup
                                     label="Smoking"
+                                    icon={Cigarette}
                                     name="smoking"
                                     selected={formData.smoking}
                                     onChange={handleChange}
@@ -171,6 +190,7 @@ const SurveyPage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField
                                     label="Ejection Fraction"
+                                    icon={HeartPulse}
                                     type="number"
                                     name="ejectionFraction"
                                     value={formData.ejectionFraction}
@@ -181,6 +201,7 @@ const SurveyPage = () => {
                                 />
                                 <InputField
                                     label="Serum Creatinine"
+                                    icon={FlaskConical}
                                     type="number"
                                     name="serumCreatinine"
                                     value={formData.serumCreatinine}
@@ -191,6 +212,7 @@ const SurveyPage = () => {
                                 />
                                 <InputField
                                     label="Serum Sodium"
+                                    icon={TestTube}
                                     type="number"
                                     name="serumSodium"
                                     value={formData.serumSodium}
@@ -201,6 +223,7 @@ const SurveyPage = () => {
                                 />
                                 <InputField
                                     label="Platelets"
+                                    icon={Microscope}
                                     type="number"
                                     name="platelets"
                                     value={formData.platelets}
@@ -212,6 +235,7 @@ const SurveyPage = () => {
                                 <div className="md:col-span-2">
                                     <InputField
                                         label="Follow-up Period"
+                                        icon={Clock}
                                         type="number"
                                         name="time"
                                         value={formData.time}
