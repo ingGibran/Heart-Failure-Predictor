@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib 
 import numpy as np
+import os
+import sys
 
 # Configuración para la Nube
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -28,8 +30,29 @@ app.add_middleware(
 )
 
 # Importar modelo y scaler
-model = joblib.load(MODEL_PATH)
-scaler = joblib.load(SCALER_PATH)
+model = None
+scaler = None
+load_error = None
+
+try:
+    if os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH):
+        model = joblib.load(MODEL_PATH)
+        scaler = joblib.load(SCALER_PATH)
+    else:
+        load_error = f"Files not found. Dir: {DIR_PATH}, Contents: {os.listdir(DIR_PATH) if os.path.exists(DIR_PATH) else 'Dir not found'}"
+except Exception as e:
+    load_error = str(e)
+    print(f"Error loading model: {e}")
+
+@app.get("/")
+def health_check():
+    return {
+        "status": "online",
+        "model_loaded": model is not None,
+        "scaler_loaded": scaler is not None,
+        "load_error": load_error,
+        "python_version": sys.version
+    }
 
 # Definir clase de datos de entrada
 class PatientData(BaseModel):
@@ -48,6 +71,9 @@ class PatientData(BaseModel):
 # Endpoint predicción
 @app.post("/predict")
 def predict_heart_failure(data: PatientData):
+    if model is None or scaler is None:
+        raise HTTPException(status_code=503, detail=f"Model not loaded. Error: {load_error}")
+        
     numeric_values = [
         data.age,
         data.creatinine_phosphokinase,
