@@ -5,6 +5,7 @@ import joblib
 import numpy as np
 import os
 import sys
+import traceback
 
 # Configuración para la Nube
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -43,6 +44,7 @@ try:
 except Exception as e:
     load_error = str(e)
     print(f"Error loading model: {e}")
+    traceback.print_exc()
 
 @app.get("/health")
 def health_check():
