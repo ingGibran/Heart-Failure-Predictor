@@ -15,6 +15,7 @@ import {
     TestTube,
     Microscope,
     Clock,
+    Activity, // Added for Creatinine Phosphokinase
 } from "lucide-react";
 
 const SurveyPage = () => {
@@ -30,8 +31,10 @@ const SurveyPage = () => {
         serumCreatinine: "",
         serumSodium: "",
         platelets: "",
-        time: "",
+        creatininePhospholinase: "", // Added missing field
     });
+
+    const [predictionResult, setPredictionResult] = useState(null); // Store API result
 
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
@@ -57,13 +60,48 @@ const SurveyPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) {
             return;
         }
-        console.log("Form Data:", formData);
-        setSubmitted(true);
+
+        try {
+            // Transform data for backend
+            const payload = {
+                age: parseInt(formData.age),
+                anemia: formData.anaemia === 'yes' ? 1 : 0,
+                creatinine_phospholinase: parseFloat(formData.creatininePhospholinase),
+                diabetes: formData.diabetes === 'yes' ? 1 : 0,
+                ejection_fraction: parseFloat(formData.ejectionFraction),
+                high_blood_pressure: formData.highBloodPressure === 'yes' ? 1 : 0,
+                platelets: parseFloat(formData.platelets),
+                serum_creatinine: parseFloat(formData.serumCreatinine),
+                serum_sodium: parseFloat(formData.serumSodium),
+                sex: formData.sex === 'man' ? 1 : 0, // man=1, woman=0
+                smoking: formData.smoking === 'yes' ? 1 : 0,
+            };
+
+            const response = await fetch("http://127.0.0.1:8000/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+            setPredictionResult(data);
+            setSubmitted(true);
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            // Handle error (maybe set an error state to show to user)
+            setErrors(prev => ({ ...prev, submit: "Failed to connect to the server. Please try again." }));
+        }
     };
 
     if (submitted) {
@@ -77,8 +115,11 @@ const SurveyPage = () => {
                     <p className="text-slate-600 mb-8">
                         Thank you for providing your details. Your personalized heart health prediction is being processed.
                     </p>
-                    <div className="p-4 bg-brand-50 rounded-xl border border-brand-100 text-brand-700 font-medium">
-                        Prediction results will appear here.
+                    <div className={`p-4 rounded-xl border font-medium ${predictionResult?.prediction === 1
+                        ? "bg-red-50 border-red-100 text-red-700"
+                        : "bg-green-50 border-green-100 text-green-700"
+                        }`}>
+                        {predictionResult ? predictionResult.label : "Processing..."}
                     </div>
                     <button
                         onClick={() => setSubmitted(false)}
@@ -145,6 +186,7 @@ const SurveyPage = () => {
                                     name="sex"
                                     selected={formData.sex}
                                     onChange={handleChange}
+                                    options={['man', 'woman']}
                                 />
                             </div>
                         </div>
@@ -200,6 +242,17 @@ const SurveyPage = () => {
                                     error={errors.ejectionFraction}
                                 />
                                 <InputField
+                                    label="Creatinine Phosphokinase"
+                                    icon={Activity}
+                                    type="number"
+                                    name="creatininePhospholinase"
+                                    value={formData.creatininePhospholinase}
+                                    onChange={handleChange}
+                                    placeholder="e.g. 582"
+                                    helperText="mcg/L"
+                                    error={errors.creatininePhospholinase}
+                                />
+                                <InputField
                                     label="Serum Creatinine"
                                     icon={FlaskConical}
                                     type="number"
@@ -232,19 +285,7 @@ const SurveyPage = () => {
                                     helperText="kiloplatelets/mL"
                                     error={errors.platelets}
                                 />
-                                <div className="md:col-span-2">
-                                    <InputField
-                                        label="Follow-up Period"
-                                        icon={Clock}
-                                        type="number"
-                                        name="time"
-                                        value={formData.time}
-                                        onChange={handleChange}
-                                        placeholder="e.g. 70"
-                                        helperText="Days of follow-up"
-                                        error={errors.time}
-                                    />
-                                </div>
+
                             </div>
                         </div>
 
