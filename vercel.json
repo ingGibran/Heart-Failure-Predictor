@@ -3,7 +3,7 @@
     "rewrites": [
         {
             "source": "/predict",
-            "destination": "/app/main.py"
+            "destination": "/api/index.py"
         },
         {
             "source": "/(.*)",
