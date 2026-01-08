@@ -31,7 +31,7 @@ const SurveyPage = () => {
         serumCreatinine: "",
         serumSodium: "",
         platelets: "",
-        creatininePhospholinase: "", // Added missing field
+        creatininePhosphokinase: "", // Added missing field
     });
 
     const [predictionResult, setPredictionResult] = useState(null); // Store API result
@@ -71,7 +71,7 @@ const SurveyPage = () => {
             const payload = {
                 age: parseInt(formData.age),
                 anemia: formData.anaemia === 'yes' ? 1 : 0,
-                creatinine_phospholinase: parseFloat(formData.creatininePhospholinase),
+                creatinine_phosphokinase: parseFloat(formData.creatininePhosphokinase),
                 diabetes: formData.diabetes === 'yes' ? 1 : 0,
                 ejection_fraction: parseFloat(formData.ejectionFraction),
                 high_blood_pressure: formData.highBloodPressure === 'yes' ? 1 : 0,
@@ -245,12 +245,12 @@ const SurveyPage = () => {
                                     label="Creatinine Phosphokinase"
                                     icon={Activity}
                                     type="number"
-                                    name="creatininePhospholinase"
-                                    value={formData.creatininePhospholinase}
+                                    name="creatininePhosphokinase"
+                                    value={formData.creatininePhosphokinase}
                                     onChange={handleChange}
                                     placeholder="e.g. 582"
                                     helperText="mcg/L"
-                                    error={errors.creatininePhospholinase}
+                                    error={errors.creatininePhosphokinase}
                                 />
                                 <InputField
                                     label="Serum Creatinine"
