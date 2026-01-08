@@ -35,7 +35,7 @@ scaler = joblib.load(SCALER_PATH)
 class PatientData(BaseModel):
     age: int
     anemia: int
-    creatinine_phospholinase: float
+    creatinine_phosphokinase: float
     diabetes: int
     ejection_fraction: float
     high_blood_pressure: int
