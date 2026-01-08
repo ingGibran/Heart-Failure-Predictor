@@ -44,7 +44,7 @@ except Exception as e:
     load_error = str(e)
     print(f"Error loading model: {e}")
 
-@app.get("/")
+@app.get("/health")
 def health_check():
     return {
         "status": "online",
