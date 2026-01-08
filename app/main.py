@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib 
-import pandas as pd
+import numpy as np
 
 # Configuración para la Nube
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -48,54 +48,42 @@ class PatientData(BaseModel):
 # Endpoint predicción
 @app.post("/predict")
 def predict_heart_failure(data: PatientData):
-    # Mapping input data to match model feature names
-    input_data = {
-        'age': data.age,
-        'anaemia': data.anemia, # Renamed from anemia
-        'creatinine_phosphokinase': data.creatinine_phospholinase, # Renamed
-        'diabetes': data.diabetes,
-        'ejection_fraction': data.ejection_fraction,
-        'high_blood_pressure': data.high_blood_pressure,
-        'platelets': data.platelets,
-        'serum_creatinine': data.serum_creatinine,
-        'serum_sodium': data.serum_sodium,
-        'sex': data.sex,
-        'smoking': data.smoking
-    }
+    numeric_values = [
+        data.age,
+        data.creatinine_phosphokinase,
+        data.ejection_fraction,
+        data.platelets,
+        data.serum_creatinine,
+        data.serum_sodium
+    ]
     
-    # Create DataFrame with all columns
-    input_df = pd.DataFrame([input_data])
+    numeric_array = np.array(numeric_values).reshape(1, -1)
     
-    # 1. Identify columns to scale (numeric)
-    numeric_cols = ['age', 'creatinine_phosphokinase', 'ejection_fraction', 'platelets', 'serum_creatinine', 'serum_sodium']
+    scaled_numeric = scaler.transform(numeric_array)[0] # Obtenemos el array plano
     
-    # 2. Scale numeric columns
-    # Create a subset DF for scaling to ensure column order matches scaler expectation
-    numeric_subset = input_df[numeric_cols]
-    scaled_values = scaler.transform(numeric_subset)
+    final_input = [
+        scaled_numeric[0],
+        data.anemia,
+        scaled_numeric[1],
+        data.diabetes,
+        scaled_numeric[2],
+        data.high_blood_pressure,
+        scaled_numeric[3],
+        scaled_numeric[4],
+        data.sex,
+        data.smoking
+    ]
     
-    # 3. Update DataFrame with scaled values
-    input_df[numeric_cols] = scaled_values
-    
-    # 4. Ensure Correct Column Order for Model
-    model_cols = ['age', 'anaemia', 'creatinine_phosphokinase', 'diabetes', 'ejection_fraction', 'high_blood_pressure', 'platelets', 'serum_creatinine', 'serum_sodium', 'sex', 'smoking']
-    final_input = input_df[model_cols]
-
-    # 5. Obtener Probabilidad
-    probs = model.predict_proba(final_input)
+    final_input_array = np.array(final_input).reshape(1, -1)
+    probs = model.predict_proba(final_input_array)
     prob_muerte = probs[0][1]
 
     umbral = 0.55
-    
-    if prob_muerte >= umbral:
-        prediction = 1
-        label = f"Alto Riesgo (Probabilidad: {prob_muerte:.2%})"
-    else:
-        prediction = 0
-        label = f"Bajo Riesgo (Probabilidad: {prob_muerte:.2%})"
+    prediction = 1 if prob_muerte >= umbral else 0
+    label = f"{'Alto' if prediction == 1 else 'Bajo'} Riesgo ({prob_muerte:.2%})"
     
     return {
         "prediction": prediction,
         "label": label,
-        "umbral_usado": umbral
+        "probability": prob_muerte
     }
