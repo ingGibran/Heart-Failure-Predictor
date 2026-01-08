@@ -98,6 +98,7 @@ def predict_heart_failure(data: PatientData):
         data.high_blood_pressure,
         scaled_numeric[3],
         scaled_numeric[4],
+        scaled_numeric[5],
         data.sex,
         data.smoking
     ]
