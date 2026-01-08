@@ -12,7 +12,18 @@ MODEL_PATH = os.path.join(DIR_PATH, "heart_failure_model.joblib")
 SCALER_PATH = os.path.join(DIR_PATH, "heart_failure_scaler.joblib")
 
 # Iniciar aplicación
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
 app = FastAPI(title="Modelo de Predicción de Fallo Cardiaco")
+
+# Mount assets first (specific path)
+app.mount("/assets", StaticFiles(directory="../frontend/dist/assets"), name="assets")
+
+# Root path serves index.html
+@app.get("/")
+async def read_root():
+    return FileResponse('../frontend/dist/index.html')
 
 origins = [
     "http://localhost",
