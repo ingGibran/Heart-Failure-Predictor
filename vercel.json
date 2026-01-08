@@ -1,5 +1,10 @@
 {
     "outputDirectory": "frontend/dist",
+    "functions": {
+        "api/index.py": {
+            "includeFiles": "api/*.joblib"
+        }
+    },
     "rewrites": [
         {
             "source": "/predict",

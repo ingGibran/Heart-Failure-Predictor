@@ -91,7 +91,9 @@ const SurveyPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const errorText = await response.text();
+                console.error("API Error:", response.status, errorText);
+                throw new Error(`Server returned ${response.status}: ${errorText}`);
             }
 
             const data = await response.json();
