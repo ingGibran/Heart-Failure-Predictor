@@ -4,14 +4,19 @@ from pydantic import BaseModel
 import joblib 
 import pandas as pd
 
+# Configuración para la Nube
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+MODEL_PATH = os.path.join(DIR_PATH, "heart_failure_model.joblib")
+SCALER_PATH = os.path.join(DIR_PATH, "heart_failure_scaler.joblib")
+
 # Iniciar aplicación
 app = FastAPI(title="Modelo de Predicción de Fallo Cardiaco")
 
 origins = [
-    "https://localhost",
     "http://localhost",
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "https://frontend.vercel.app"
 ]
 
 app.add_middleware(
@@ -23,8 +28,8 @@ app.add_middleware(
 )
 
 # Importar modelo y scaler
-model = joblib.load("heart_failure_model.joblib")
-scaler = joblib.load("heart_failure_scaler.joblib")
+model = joblib.load(MODEL_PATH)
+scaler = joblib.load(SCALER_PATH)
 
 # Definir clase de datos de entrada
 class PatientData(BaseModel):
